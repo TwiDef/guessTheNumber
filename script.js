@@ -1,26 +1,32 @@
 'use strict';
 
-const message = document.querySelector('.guess-message');
+
 const question = document.querySelector('.question');
-const score = document.querySelector('.score');
+const currentScore = document.querySelector('.score');
+const currentHighScore = document.querySelector('.highscore');
 const input = document.querySelector('.number-input');
 const checkBtn = document.querySelector('.check');
 const againBtn = document.querySelector('.again');
 const body = document.querySelector('body');
 
 let secretNumber = Math.trunc(Math.random() * 20) + 1;
-let points = 20;
+let score = 20;
+let highScore = 0;
 
+const displayGuessMessage = function(message) {
+    document.querySelector('.guess-message').textContent = message;
+};
+
+// default settings
 againBtn.addEventListener('click', () => {
     secretNumber = Math.trunc(Math.random() * 20) + 1;
-    points = 20;
-    score.textContent = points;
-    message.textContent = 'Начни угадывать!';
+    score = 20;
+    currentScore.textContent = score;
+    displayGuessMessage('Начни угадывать!');
     input.value = '';
     body.style.backgroundColor = '#000000';
     question.textContent = '???';
     question.style.width = '25rem';
-
 });
 
 checkBtn.addEventListener('click', () => {
@@ -28,32 +34,29 @@ checkBtn.addEventListener('click', () => {
 
     // no input
     if (!guessingNumber) {
-        message.textContent = 'Введите число!';
+        displayGuessMessage('Введите число!');
+
         // player won
     } else if (guessingNumber === secretNumber) {
-        message.textContent = 'Правильно!';
+        displayGuessMessage('Правильно!');
         question.textContent = secretNumber;
         body.style.backgroundColor = '#09fa15';
         question.style.width = '50rem';
-        // too high
-    } else if (guessingNumber > secretNumber) {
-        if (points > 1) {
-            message.textContent = 'Слишком много!';
-            points--;
-            score.textContent = points;
-        } else {
-            message.textContent = 'Ты проиграл!';
-            score.textContent = 0;
+
+        if (score > highScore) {
+            highScore = score;
+            currentHighScore.textContent = highScore;
         }
-        // too low
-    } else if (guessingNumber < secretNumber) {
-        if (points > 1) {
-            message.textContent = 'Слишком мало!';
-            points--;
-            score.textContent = points;
+
+        // num is wrong
+    } else if (guessingNumber !== secretNumber) {
+        if (score > 1) {
+            displayGuessMessage(guessingNumber > secretNumber ? 'Слишком много!' : 'Слишком мало!');
+            score--;
+            currentScore.textContent = score;
         } else {
-            message.textContent = 'Ты проиграл!';
-            score.textContent = 0;
+            displayGuessMessage('Ты проиграл!');
+            currentScore.textContent = 0;
         }
     }
 });
